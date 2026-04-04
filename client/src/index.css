@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #161F2E;
+  --color-navy-light: #1E2D42;
+  --color-navy-border: #2A3F5A;
+  --color-orange: #FF9900;
+  --color-orange-dim: #CC7A00;
+  --color-sky: #00A3E0;
+  --color-sky-dim: #0082B3;
+  --color-success: #2ECC71;
+  --color-danger: #E74C3C;
+  --color-warn: #F39C12;
+
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #161F2E;
+  color: #fff;
+  font-family: var(--font-sans);
+  margin: 0;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Drag-and-drop states */
+.drag-over {
+  outline: 2px dashed #FF9900;
+  background-color: rgba(255, 153, 0, 0.08);
+}
+
+.dragging {
+  opacity: 0.4;
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /c/Users/Jordon/aws-jam-game/server/src/routes /c/Users/Jordon/aws-jam-game/server/src/db)",
+      "Bash(mkdir -p /c/Users/Jordon/aws-jam-game/client/src/components /c/Users/Jordon/aws-jam-game/client/src/pages /c/Users/Jordon/aws-jam-game/client/src/data /c/Users/Jordon/aws-jam-game/client/src/hooks)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(timeout 4 node server/src/index.js)",
+      "Bash(git init:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
