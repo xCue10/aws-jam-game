@@ -99,13 +99,27 @@ function ConfirmPhase({ onConfirm, onCancel }) {
 
 // ─── Alert phase ──────────────────────────────────────────────────────────────
 function AlertPhase() {
+  const [on, setOn] = React.useState(true);
+  React.useEffect(() => {
+    const id = setInterval(() => setOn((v) => !v), 600);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-red-950 px-4 animate-pulse">
+    <div
+      className="flex items-center justify-center min-h-screen px-4 transition-colors duration-300"
+      style={{ backgroundColor: on ? '#450a0a' : '#0a0000' }}
+    >
       <div className="text-center space-y-4">
-        <div className="text-7xl">🚨</div>
-        <h1 className="text-5xl font-black text-red-400 tracking-widest uppercase">BREACH DETECTED</h1>
-        <p className="text-red-300 text-xl font-mono">Unauthorized access — PII exposure imminent</p>
-        <p className="text-red-500 text-sm font-mono animate-pulse">Executing IR-ALPHA...</p>
+        <div className="text-8xl">{on ? '🚨' : '⚠️'}</div>
+        <h1
+          className="text-6xl font-black tracking-widest uppercase transition-colors duration-300"
+          style={{ color: on ? '#f87171' : '#dc2626' }}
+        >
+          BREACH DETECTED
+        </h1>
+        <p className="text-red-300 text-2xl font-mono">Unauthorized access — PII exposure imminent</p>
+        <p className="text-red-500 text-sm font-mono animate-pulse mt-2">Executing IR-ALPHA...</p>
       </div>
     </div>
   );
@@ -236,10 +250,10 @@ export default function BreachProtocol({ onClose, totalScore, playerName }) {
   const [wipedCount, setWipedCount] = useState(0);
   const [wipeProgress, setWipeProgress] = useState(0);
 
-  // Alert → Terminal after 1.5s
+  // Alert → Terminal after 3.5s
   useEffect(() => {
     if (phase !== 'alert') return;
-    const t = setTimeout(() => setPhase('terminal'), 1500);
+    const t = setTimeout(() => setPhase('terminal'), 3500);
     return () => clearTimeout(t);
   }, [phase]);
 

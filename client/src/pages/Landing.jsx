@@ -79,7 +79,7 @@ export default function Landing({ onStart }) {
         {/* Event info */}
         <div className="bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-400 text-center space-y-0.5">
           <p className="text-orange-400 font-semibold uppercase tracking-widest text-xs">National AWS Jam Showdown · Prep Workshop</p>
-          <p>April 26, 2026 · CSN Charleston · Bldg C, Room 115</p>
+          <p>April 7, 2026 · CSN Charleston · Bldg C, Room 115</p>
         </div>
 
         {/* Start form */}
