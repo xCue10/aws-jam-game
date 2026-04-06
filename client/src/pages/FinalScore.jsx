@@ -1,15 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 import { challenges } from '../data/challenges.js';
 
 // 2×easy(85) + 5×medium(110) + 3×hard(160) = 170+550+480 = 1200
 const MAX_TOTAL = 1200;
 
-function ScoreTier({ score }) {
+function ScoreTier(score) {
   if (score >= 1000) return { label: 'Cloud Security Expert', color: 'text-orange-400', emoji: '🏆' };
   if (score >= 720)  return { label: 'Security Analyst', color: 'text-sky-400', emoji: '🛡️' };
   if (score >= 450)  return { label: 'Cloud Defender', color: 'text-green-400', emoji: '☁️' };
   return { label: 'Security Apprentice', color: 'text-yellow-400', emoji: '📚' };
+}
+
+function useCountUp(target, duration = 2000) {
+  const [display, setDisplay] = useState(0);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    if (target === 0) return;
+    const start = performance.now();
+    const animate = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * target));
+      if (progress < 1) frameRef.current = requestAnimationFrame(animate);
+    };
+    frameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [target, duration]);
+
+  return display;
 }
 
 export default function FinalScore({ playerName, scores, totalScore }) {
@@ -17,7 +40,9 @@ export default function FinalScore({ playerName, scores, totalScore }) {
   const [rank, setRank] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const tier = ScoreTier({ score: totalScore });
+  const tier = ScoreTier(totalScore);
+  const displayScore = useCountUp(totalScore, 2000);
+  const isExpert = totalScore >= 1000;
 
   useEffect(() => {
     const completedCount = Object.keys(scores).length;
@@ -43,6 +68,17 @@ export default function FinalScore({ playerName, scores, totalScore }) {
     }
   }, []);
 
+  // Fire confetti for Expert tier
+  useEffect(() => {
+    if (!isExpert) return;
+    const t = setTimeout(() => {
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#f97316', '#fb923c', '#fbbf24', '#ffffff'] });
+      setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.1, y: 0.5 } }), 400);
+      setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { x: 0.9, y: 0.5 } }), 600);
+    }, 2200); // fire after count-up finishes
+    return () => clearTimeout(t);
+  }, [isExpert]);
+
   const shareText = `I scored ${totalScore}/${MAX_TOTAL} on the AWS Security Jam Simulator! 🔐☁️ #AWSJam #CloudSecurity #LC3 #CSN`;
 
   return (
@@ -62,15 +98,17 @@ export default function FinalScore({ playerName, scores, totalScore }) {
           {submitting && <p className="text-slate-500 text-xs">Saving score...</p>}
         </div>
 
-        {/* Total score */}
+        {/* Total score with count-up */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
           <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">Final Score</p>
-          <div className="text-8xl font-bold font-mono text-orange-400">{totalScore}</div>
+          <div className="text-8xl font-bold font-mono text-orange-400 tabular-nums transition-all">
+            {displayScore}
+          </div>
           <p className="text-slate-500 text-sm mt-1">out of {MAX_TOTAL}</p>
           <div className="w-full bg-slate-700 rounded-full h-3 mt-4">
             <div
-              className="h-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-300 transition-all duration-700"
-              style={{ width: `${Math.round((totalScore / MAX_TOTAL) * 100)}%` }}
+              className="h-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-300 transition-all duration-[2000ms]"
+              style={{ width: `${Math.round((displayScore / MAX_TOTAL) * 100)}%` }}
             />
           </div>
         </div>
@@ -81,6 +119,8 @@ export default function FinalScore({ playerName, scores, totalScore }) {
           <div className="space-y-3">
             {challenges.map((c) => {
               const s = scores[c.id] ?? 0;
+              const maxPossible = (c.maxPoints ?? 100) + 10;
+              const pct = Math.round((s / maxPossible) * 100);
               return (
                 <div key={c.id} className="flex items-center gap-3">
                   <span className="text-xl w-8 shrink-0">{c.icon}</span>
@@ -92,9 +132,9 @@ export default function FinalScore({ playerName, scores, totalScore }) {
                     <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${
-                          s >= 80 ? 'bg-green-500' : s >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                          pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'
                         }`}
-                        style={{ width: `${s}%` }}
+                        style={{ width: `${pct}%` }}
                       />
                     </div>
                   </div>

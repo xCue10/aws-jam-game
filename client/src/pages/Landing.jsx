@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 
 const DOMAINS = [
   '🔐 IAM', '🏛️ SCPs', '🛡️ GuardDuty', '🔍 Inspector',
@@ -95,6 +96,14 @@ export default function Landing({ onStart }) {
           <button onClick={() => navigate('/leaderboard')} className="hover:text-slate-400 transition-colors underline underline-offset-2">
             View leaderboard
           </button>
+        </div>
+
+        {/* QR code */}
+        <div className="flex flex-col items-center gap-2">
+          <div className="bg-white p-3 rounded-xl">
+            <QRCodeSVG value={typeof window !== 'undefined' ? window.location.origin : ''} size={96} />
+          </div>
+          <p className="text-slate-600 text-xs">Scan to open on your device</p>
         </div>
       </div>
     </div>

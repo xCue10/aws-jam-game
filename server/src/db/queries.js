@@ -34,7 +34,7 @@ export async function saveScore({ playerName, scores, totalScore }) {
 
 export async function getLeaderboard(limit = 20) {
   const result = await getPool().query(
-    `SELECT id, player_name, total_score, completed_at
+    `SELECT id, player_name, scores, total_score, completed_at
      FROM scores
      ORDER BY total_score DESC, completed_at ASC
      LIMIT $1`,
