@@ -1,11 +1,13 @@
 /**
- * All 6 challenge definitions.
+ * All 10 challenge definitions.
  *
  * Common shape:
  *   id          – unique slug
  *   domain      – display label
  *   title       – challenge title
  *   icon        – emoji icon
+ *   difficulty  – 'easy' | 'medium' | 'hard'
+ *   maxPoints   – point ceiling for this challenge (Easy=75, Medium=100, Hard=150)
  *   description – brief task description shown on Mission Board
  *   scenario    – full narrative shown on the Challenge screen
  *   type        – 'bucket' | 'order' | 'match'
@@ -19,13 +21,15 @@
 
 export const challenges = [
   // ─────────────────────────────────────────────
-  // 1. IAM — Fix the Policy
+  // 1. IAM — Fix the Policy  [Medium]
   // ─────────────────────────────────────────────
   {
     id: 'iam',
     domain: 'Identity & Access',
     title: 'Fix the Policy',
     icon: '🔐',
+    difficulty: 'medium',
+    maxPoints: 100,
     description: 'Drag permission statements into Allow or Deny to build a least-privilege IAM policy.',
     scenario:
       'A developer accidentally attached an overly-permissive policy to a Lambda function. You need to rebuild the policy from scratch. Drag each permission statement into the correct bucket — Allow only what the function actually needs, and explicitly Deny the rest.',
@@ -55,13 +59,15 @@ export const challenges = [
   },
 
   // ─────────────────────────────────────────────
-  // 2. Endpoint Protection — Triage the Findings
+  // 2. Endpoint Protection — Triage the Findings  [Medium]
   // ─────────────────────────────────────────────
   {
     id: 'endpoint',
     domain: 'Endpoint Protection',
     title: 'Triage the Findings',
     icon: '🛡️',
+    difficulty: 'medium',
+    maxPoints: 100,
     description: 'GuardDuty findings are shown as cards. Drag them into severity order: Critical → High → Medium → Low.',
     scenario:
       'GuardDuty just fired 6 findings across your AWS account. Your job is to triage them — drag the finding cards into correct severity order from most critical to least critical. Response time matters.',
@@ -113,13 +119,15 @@ export const challenges = [
   },
 
   // ─────────────────────────────────────────────
-  // 3. Web App Security — Block the Attack
+  // 3. Web App Security — Block the Attack  [Easy]
   // ─────────────────────────────────────────────
   {
     id: 'webapp',
     domain: 'Web App Security',
     title: 'Block the Attack',
     icon: '🌐',
+    difficulty: 'easy',
+    maxPoints: 75,
     description: 'Classify each incoming web request — drag malicious traffic to WAF Block and legit traffic to Allow Through.',
     scenario:
       'Your WAF is in detection-only mode and you\'ve been asked to review the last 8 requests and set correct actions. Misclassifying legitimate traffic costs points — read the requests carefully before placing them.',
@@ -189,13 +197,15 @@ export const challenges = [
   },
 
   // ─────────────────────────────────────────────
-  // 4. Data Security — Classify the Data
+  // 4. Data Security — Classify the Data  [Medium]
   // ─────────────────────────────────────────────
   {
     id: 'data',
     domain: 'Data Security',
     title: 'Classify the Data',
     icon: '🗄️',
+    difficulty: 'medium',
+    maxPoints: 100,
     description: 'Drag each data type into the correct protection bucket: Encrypt with KMS, Scan with Macie, or No Action Needed.',
     scenario:
       'Your team is auditing a new S3 bucket before it goes live. Eight data types have been discovered in the bucket. Assign the correct protection action to each one.',
@@ -227,13 +237,15 @@ export const challenges = [
   },
 
   // ─────────────────────────────────────────────
-  // 5. Incident Response — Read the CloudTrail Log
+  // 5. Incident Response — Read the CloudTrail Log  [Hard]
   // ─────────────────────────────────────────────
   {
     id: 'incident',
     domain: 'Incident Response',
     title: 'Read the CloudTrail Log',
     icon: '📋',
+    difficulty: 'hard',
+    maxPoints: 150,
     description: 'Reconstruct a security incident by dragging CloudTrail events into the correct chronological order.',
     scenario:
       'An S3 bucket containing customer data was exfiltrated. CloudTrail captured 6 events. Reconstruct the attack timeline by dragging the events into the correct order — earliest event at the top.',
@@ -285,13 +297,15 @@ export const challenges = [
   },
 
   // ─────────────────────────────────────────────
-  // 6. Backups & Recovery — Design the Backup Plan
+  // 6. Backups & Recovery — Design the Backup Plan  [Easy]
   // ─────────────────────────────────────────────
   {
     id: 'backup',
     domain: 'Backups & Recovery',
     title: 'Design the Backup Plan',
     icon: '💾',
+    difficulty: 'easy',
+    maxPoints: 75,
     description: 'Match each backup strategy to the disaster scenario it best protects against.',
     scenario:
       'Your team needs to design a multi-layer backup strategy. Four disaster scenarios have been identified. Drag each backup strategy to the scenario it most directly defends against.',
@@ -318,6 +332,184 @@ export const challenges = [
       'S3 Object Lock (WORM — Write Once Read Many) prevents ransomware from encrypting or deleting backups. S3 Versioning lets you restore previous file versions after accidental deletion. AWS Backup with cross-region copy ensures a full region failure does not destroy your data. RDS Automated Snapshots let you roll back a corrupted database to a known-good point-in-time.',
     awsTool: 'AWS Backup + S3 Object Lock',
     clue: 'Think about what each disaster actually destroys. Ransomware encrypts live data — you need immutable backups. Region outage takes down everything in one region — you need copies elsewhere.',
+  },
+
+  // ─────────────────────────────────────────────
+  // 7. SCPs — Enforce the Guardrails  [Hard]
+  // ─────────────────────────────────────────────
+  {
+    id: 'scp',
+    domain: 'Identity & Access',
+    title: 'Enforce the Guardrails',
+    icon: '🏛️',
+    difficulty: 'hard',
+    maxPoints: 150,
+    description: 'Drag each AWS action into the correct bucket — block it with an SCP or permit it across the organization.',
+    scenario:
+      'Your organization is rolling out AWS Organizations with Service Control Policies (SCPs) to enforce security guardrails across all member accounts. Review each action and decide: should it be blocked by an SCP (denied organization-wide) or permitted (not restricted by SCP)?',
+    type: 'bucket',
+    items: [
+      { id: 'scp-1', label: 'cloudtrail:StopLogging', detail: 'Disabling the CloudTrail audit trail in any member account', correct: 'deny' },
+      { id: 'scp-2', label: 'ec2:RunInstances in us-east-1', detail: 'Launching EC2 instances in an approved region', correct: 'allow' },
+      { id: 'scp-3', label: 'ec2:RunInstances in ap-southeast-3', detail: 'Launching instances in a non-approved region', correct: 'deny' },
+      { id: 'scp-4', label: 'cloudwatch:PutMetricAlarm', detail: 'Creating CloudWatch monitoring alarms', correct: 'allow' },
+      { id: 'scp-5', label: 'iam:CreateAccessKey for root', detail: 'Generating programmatic credentials for the root account', correct: 'deny' },
+      { id: 'scp-6', label: 'lambda:InvokeFunction', detail: 'Executing approved Lambda functions', correct: 'allow' },
+      { id: 'scp-7', label: 'config:DeleteConfigRule', detail: 'Removing AWS Config compliance rules', correct: 'deny' },
+      { id: 'scp-8', label: 'logs:CreateLogGroup', detail: 'Creating CloudWatch Logs log groups', correct: 'allow' },
+    ],
+    zones: [
+      { id: 'deny', label: 'SCP Block (Deny)', color: 'danger' },
+      { id: 'allow', label: 'Permit (Not Restricted)', color: 'success' },
+    ],
+    correctAnswer: {
+      deny: ['scp-1', 'scp-3', 'scp-5', 'scp-7'],
+      allow: ['scp-2', 'scp-4', 'scp-6', 'scp-8'],
+    },
+    explanation:
+      'SCPs act as maximum permission guardrails for every account in your AWS Organization. Block: disabling CloudTrail (destroys audit trail), launching in non-approved regions (violates data residency), creating root access keys (a critical security anti-pattern), and deleting Config rules (undermines compliance enforcement). Permit: launching instances in approved regions, CloudWatch alarms, Lambda invocations, and log group creation are standard operations that should not be restricted.',
+    awsTool: 'AWS Organizations + SCPs',
+    clue: 'SCPs should block anything that undermines security visibility (CloudTrail, Config), violates region policy, or grants dangerous root-level access. Routine operational actions in approved regions should be permitted.',
+  },
+
+  // ─────────────────────────────────────────────
+  // 8. Secrets Manager — Rotate the Secrets  [Medium]
+  // ─────────────────────────────────────────────
+  {
+    id: 'secrets',
+    domain: 'Data Security',
+    title: 'Rotate the Secrets',
+    icon: '🔑',
+    difficulty: 'medium',
+    maxPoints: 100,
+    description: 'Match each discovered secret to the correct remediation action — from immediate revocation to compliance sign-off.',
+    scenario:
+      'A security audit has uncovered 6 secrets across your AWS environment with very different risk profiles. Match each one to the correct remediation action before the window to act closes.',
+    type: 'match',
+    items: [
+      { id: 'sm-1', label: 'DB password — last rotated 180 days ago', correct: 'auto-rotate' },
+      { id: 'sm-2', label: 'AWS access key committed to public GitHub repo', correct: 'revoke-now' },
+      { id: 'sm-3', label: 'Internal service token — rotates every 7 days via Lambda', correct: 'compliant' },
+      { id: 'sm-4', label: 'Root account access key — currently active', correct: 'revoke-now' },
+      { id: 'sm-5', label: 'Third-party SaaS OAuth token — vendor controls rotation', correct: 'manual-rotate' },
+      { id: 'sm-6', label: 'RDS credentials stored in Secrets Manager with auto-rotation enabled', correct: 'compliant' },
+    ],
+    zones: [
+      { id: 'revoke-now', label: 'Revoke Immediately', color: 'danger' },
+      { id: 'auto-rotate', label: 'Enable Auto-Rotation', color: 'orange' },
+      { id: 'manual-rotate', label: 'Schedule Manual Rotation', color: 'sky' },
+      { id: 'compliant', label: 'Already Compliant', color: 'success' },
+    ],
+    correctAnswer: {
+      'revoke-now': ['sm-2', 'sm-4'],
+      'auto-rotate': ['sm-1'],
+      'manual-rotate': ['sm-5'],
+      'compliant': ['sm-3', 'sm-6'],
+    },
+    explanation:
+      'Any secret exposed in a public repo or attached to the root account must be revoked immediately — assume it is already compromised. Stale database passwords should be enrolled in Secrets Manager auto-rotation. Third-party tokens where you do not control the rotation API require a manual rotation schedule. Secrets already enrolled in automated rotation are compliant.',
+    awsTool: 'AWS Secrets Manager',
+    clue: 'Treat public exposure and root access keys as immediate incidents — revoke first, investigate after. Auto-rotation is for credentials you own and can rotate programmatically. Manual rotation is for credentials a third party controls.',
+  },
+
+  // ─────────────────────────────────────────────
+  // 9. Inspector — Patch the Vulnerabilities  [Medium]
+  // ─────────────────────────────────────────────
+  {
+    id: 'inspector',
+    domain: 'Endpoint Protection',
+    title: 'Patch the Vulnerabilities',
+    icon: '🔍',
+    difficulty: 'medium',
+    maxPoints: 100,
+    description: 'Amazon Inspector found 6 vulnerabilities across your EC2 fleet. Drag them into remediation priority order — most critical first.',
+    scenario:
+      'Amazon Inspector has completed a scan of your EC2 fleet and raised 6 findings with different severity levels and attack surfaces. Order them from the highest remediation priority (top) to the lowest (bottom).',
+    type: 'order',
+    items: [
+      {
+        id: 'ins-1',
+        label: 'CVE-2021-44228 — Apache Log4j RCE (CVSS 10.0)',
+        detail: 'Unauthenticated remote code execution on an internet-facing EC2 instance',
+        correct: 1,
+      },
+      {
+        id: 'ins-2',
+        label: 'CVE-2022-0778 — OpenSSL infinite loop (CVSS 7.5)',
+        detail: 'Denial-of-service via malformed TLS certificate — affects public load balancer',
+        correct: 2,
+      },
+      {
+        id: 'ins-3',
+        label: 'Port 22 (SSH) open to 0.0.0.0/0',
+        detail: 'Unintended network exposure — SSH accessible from any IP on the internet',
+        correct: 3,
+      },
+      {
+        id: 'ins-4',
+        label: 'CVE-2023-0286 — OpenSSL type confusion (CVSS 5.9)',
+        detail: 'Memory corruption in X.509 certificate handling — internal instances only',
+        correct: 4,
+      },
+      {
+        id: 'ins-5',
+        label: 'Python 3.8 runtime — end of life, multiple medium CVEs',
+        detail: 'Outdated runtime accumulating known vulnerabilities — no active exploit observed',
+        correct: 5,
+      },
+      {
+        id: 'ins-6',
+        label: 'Missing HTTP security headers on internal dashboard',
+        detail: 'Informational — no CVE, low exploitability, accessible only on private VPC',
+        correct: 6,
+      },
+    ],
+    zones: [],
+    correctAnswer: ['ins-1', 'ins-2', 'ins-3', 'ins-4', 'ins-5', 'ins-6'],
+    explanation:
+      'Log4Shell (CVE-2021-44228) is CVSS 10.0 with active internet-facing exposure — always priority one. The OpenSSL DoS (CVSS 7.5) can take down public-facing services. Open SSH to 0.0.0.0/0 is active network exposure increasing attack surface. The OpenSSL type confusion (CVSS 5.9) is medium severity on internal hosts. EOL Python runtimes accumulate risk over time but have no active exploit. Missing security headers on internal-only services are informational last.',
+    awsTool: 'Amazon Inspector',
+    clue: 'Sort by: CVSS score first, then consider internet-facing vs internal exposure. RCE outranks DoS. Active open ports outrank "could be exploited someday" findings.',
+  },
+
+  // ─────────────────────────────────────────────
+  // 10. Systems Manager — Patch the Fleet  [Hard]
+  // ─────────────────────────────────────────────
+  {
+    id: 'ssm',
+    domain: 'Endpoint Protection',
+    title: 'Patch the Fleet',
+    icon: '⚙️',
+    difficulty: 'hard',
+    maxPoints: 150,
+    description: 'Classify each SSM task into the correct capability: Run Command, State Manager, or Patch Manager.',
+    scenario:
+      'Your team is standardizing how AWS Systems Manager is used across a fleet of 200 EC2 instances. Classify each operational task into the correct SSM capability — the right tool depends on whether the task is one-time, continuous, or patch-specific.',
+    type: 'bucket',
+    items: [
+      { id: 'ssm-1', label: 'Install Apache on 50 instances right now', detail: 'One-time immediate execution across a target set', correct: 'run-command' },
+      { id: 'ssm-2', label: 'Ensure CloudWatch agent is always installed fleet-wide', detail: 'Ongoing configuration that must survive reboots and new instances', correct: 'state-manager' },
+      { id: 'ssm-3', label: 'Apply critical OS patches during Sunday maintenance window', detail: 'Scheduled patch deployment with approval rules', correct: 'patch-manager' },
+      { id: 'ssm-4', label: 'Reboot a single instance after a manual config change', detail: 'One-time ad-hoc operation on a specific instance', correct: 'run-command' },
+      { id: 'ssm-5', label: 'Enforce a CIS hardening baseline on all new instances', detail: 'Continuously re-applied configuration for compliance', correct: 'state-manager' },
+      { id: 'ssm-6', label: 'Scan the fleet for missing security patches daily', detail: 'Recurring compliance scan with a patch baseline', correct: 'patch-manager' },
+      { id: 'ssm-7', label: 'Collect software inventory from all managed instances', detail: 'Continuous data collection updated on a schedule', correct: 'state-manager' },
+      { id: 'ssm-8', label: 'Run a custom diagnostic script on one EC2 instance', detail: 'One-time targeted troubleshooting operation', correct: 'run-command' },
+    ],
+    zones: [
+      { id: 'run-command', label: 'Run Command', color: 'sky' },
+      { id: 'state-manager', label: 'State Manager', color: 'orange' },
+      { id: 'patch-manager', label: 'Patch Manager', color: 'success' },
+    ],
+    correctAnswer: {
+      'run-command': ['ssm-1', 'ssm-4', 'ssm-8'],
+      'state-manager': ['ssm-2', 'ssm-5', 'ssm-7'],
+      'patch-manager': ['ssm-3', 'ssm-6'],
+    },
+    explanation:
+      'Run Command executes one-time, on-demand scripts or commands across any set of instances — ideal for immediate or ad-hoc tasks. State Manager enforces continuous configuration compliance — it repeatedly applies associations to keep instances in a desired state (CloudWatch agent installed, hardening baseline applied, inventory collected). Patch Manager is purpose-built for OS patching workflows — scanning for missing patches and deploying them through maintenance windows.',
+    awsTool: 'AWS Systems Manager',
+    clue: 'Ask yourself: is this one-time (Run Command), always-on / re-applied (State Manager), or specifically about OS patches and compliance scanning (Patch Manager)?',
   },
 ];
 

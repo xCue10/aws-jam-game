@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { challenges } from '../data/challenges.js';
 
-const MAX_TOTAL = 660;
+// 2×easy(85) + 5×medium(110) + 3×hard(160) = 170+550+480 = 1200
+const MAX_TOTAL = 1200;
 
 function ScoreTier({ score }) {
-  if (score >= 550) return { label: 'Cloud Security Expert', color: 'text-orange-400', emoji: '🏆' };
-  if (score >= 400) return { label: 'Security Analyst', color: 'text-sky-400', emoji: '🛡️' };
-  if (score >= 250) return { label: 'Cloud Defender', color: 'text-green-400', emoji: '☁️' };
+  if (score >= 1000) return { label: 'Cloud Security Expert', color: 'text-orange-400', emoji: '🏆' };
+  if (score >= 720)  return { label: 'Security Analyst', color: 'text-sky-400', emoji: '🛡️' };
+  if (score >= 450)  return { label: 'Cloud Defender', color: 'text-green-400', emoji: '☁️' };
   return { label: 'Security Apprentice', color: 'text-yellow-400', emoji: '📚' };
 }
 
@@ -42,7 +43,7 @@ export default function FinalScore({ playerName, scores, totalScore }) {
     }
   }, []);
 
-  const shareText = `I scored ${totalScore}/${MAX_TOTAL} on the AWS Security Jam Simulator! 🔐☁️ #AWSJam #CloudSecurity #LC3`;
+  const shareText = `I scored ${totalScore}/${MAX_TOTAL} on the AWS Security Jam Simulator! 🔐☁️ #AWSJam #CloudSecurity #LC3 #CSN`;
 
   return (
     <div className="min-h-screen bg-[#161F2E] px-4 py-8 flex items-center justify-center">

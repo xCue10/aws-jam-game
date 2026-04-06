@@ -20,9 +20,10 @@ export default function App() {
   };
 
   /** Called by Challenge page after submission */
-  const handleComplete = (challengeId, rawScore, timeBonus, usedClue) => {
+  const handleComplete = (challengeId, rawScore, timeBonus, usedClue, maxPoints = 100) => {
     const penalty = usedClue ? 25 : 0;
-    const final = Math.max(0, Math.min(100, rawScore) - penalty + timeBonus);
+    const scaled = Math.round((rawScore / 100) * maxPoints);
+    const final = Math.max(0, scaled - penalty + timeBonus);
     setScores((prev) => ({ ...prev, [challengeId]: final }));
     if (usedClue) {
       setCluesUsed((prev) => ({ ...prev, [challengeId]: true }));

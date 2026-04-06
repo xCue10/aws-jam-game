@@ -58,7 +58,7 @@ export default function MissionBoard({ playerName, scores, totalScore }) {
         {/* Tip */}
         {!allComplete && (
           <p className="text-slate-600 text-sm text-center">
-            Complete all 6 challenges in any order to unlock your final score.
+            Complete all 10 challenges in any order to unlock your final score.
           </p>
         )}
       </div>

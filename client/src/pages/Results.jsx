@@ -63,12 +63,13 @@ export default function Results({ scores, cluesUsed }) {
 
   const score = scores[id];
   const usedClue = cluesUsed?.[id];
-  const pct = score;
+  const maxPossible = (challenge.maxPoints ?? 100) + 10; // +10 for max time bonus
+  const pct = Math.min(100, Math.round((score / maxPossible) * 100));
 
   const grade =
-    score >= 90 ? { label: 'Excellent', color: 'text-green-400' }
-    : score >= 70 ? { label: 'Good', color: 'text-sky-400' }
-    : score >= 50 ? { label: 'Partial', color: 'text-yellow-400' }
+    pct >= 90 ? { label: 'Excellent', color: 'text-green-400' }
+    : pct >= 70 ? { label: 'Good', color: 'text-sky-400' }
+    : pct >= 50 ? { label: 'Partial', color: 'text-yellow-400' }
     : { label: 'Needs Work', color: 'text-red-400' };
 
   return (
@@ -79,7 +80,8 @@ export default function Results({ scores, cluesUsed }) {
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
           <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">{challenge.domain} · {challenge.title}</p>
           <div className="text-7xl font-bold font-mono text-white my-4">{score}</div>
-          <div className={`text-2xl font-semibold ${grade.color} mb-2`}>{grade.label}</div>
+          <p className="text-slate-500 text-sm">out of {maxPossible}</p>
+          <div className={`text-2xl font-semibold ${grade.color} mb-2 mt-1`}>{grade.label}</div>
           <div className="w-full bg-slate-700 rounded-full h-2 mt-4">
             <div
               className={`h-2 rounded-full transition-all ${

@@ -4,6 +4,21 @@ import { CHALLENGE_MAP } from '../data/challenges.js';
 import DragDropChallenge from '../components/DragDropChallenge.jsx';
 import { useTimer } from '../hooks/useTimer.js';
 
+const DIFFICULTY_STYLES = {
+  easy:   'bg-green-500/20 text-green-400 border-green-500/40',
+  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40',
+  hard:   'bg-red-500/20 text-red-400 border-red-500/40',
+};
+
+function DifficultyBadge({ difficulty }) {
+  if (!difficulty) return null;
+  return (
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${DIFFICULTY_STYLES[difficulty] ?? ''}`}>
+      {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+    </span>
+  );
+}
+
 export default function Challenge({ onComplete, scores }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -30,7 +45,7 @@ export default function Challenge({ onComplete, scores }) {
   const handleSubmit = (rawScore, placed, usedClue) => {
     const finalElapsed = stop();
     const tb = finalElapsed < 60 ? 10 : finalElapsed < 90 ? 5 : 0;
-    onComplete(challenge.id, rawScore, tb, usedClue);
+    onComplete(challenge.id, rawScore, tb, usedClue, challenge.maxPoints ?? 100);
     navigate(`/results/${challenge.id}`);
   };
 
@@ -49,13 +64,17 @@ export default function Challenge({ onComplete, scores }) {
         {/* Challenge header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-1">
-              {challenge.domain}
-            </p>
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-xs font-semibold text-orange-400 uppercase tracking-widest">
+                {challenge.domain}
+              </p>
+              <DifficultyBadge difficulty={challenge.difficulty} />
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
               <span>{challenge.icon}</span>
               {challenge.title}
             </h1>
+            <p className="text-xs text-slate-500 mt-1">Up to {challenge.maxPoints} pts</p>
           </div>
 
           {/* Timer */}

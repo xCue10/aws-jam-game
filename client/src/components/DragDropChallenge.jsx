@@ -158,7 +158,7 @@ function MatchChallenge({ challenge, dragDrop }) {
     <div className="space-y-6">
       {/* Source pool */}
       <div>
-        <p className="text-xs text-slate-400 uppercase tracking-widest mb-3">Backup strategies</p>
+        <p className="text-xs text-slate-400 uppercase tracking-widest mb-3">Items to match</p>
         <div className="flex flex-wrap gap-2">
           {unplaced.map((id) => {
             const item = challenge.items.find((i) => i.id === id);
