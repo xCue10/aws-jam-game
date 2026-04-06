@@ -12,6 +12,7 @@ const DOMAINS = [
 export default function Landing({ onStart }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [existing, setExisting] = useState(null); // { scores, completedCount } when name clash found
   const navigate = useNavigate();
 
   const handleStart = async (e) => {
@@ -23,13 +24,30 @@ export default function Landing({ onStart }) {
       const res = await fetch(`/api/scores/player/${encodeURIComponent(trimmed)}`);
       const data = await res.json();
       const restoredScores = data.scores && typeof data.scores === 'object' ? data.scores : {};
-      onStart(trimmed, restoredScores);
+      const completedCount = Object.keys(restoredScores).length;
+      if (completedCount > 0) {
+        // Name already has progress — ask to confirm
+        setExisting({ scores: restoredScores, completedCount });
+        setLoading(false);
+        return;
+      }
+      onStart(trimmed, {});
     } catch {
       onStart(trimmed, {});
     } finally {
       setLoading(false);
     }
     navigate('/board');
+  };
+
+  const confirmRestore = () => {
+    onStart(name.trim(), existing.scores);
+    navigate('/board');
+  };
+
+  const denyRestore = () => {
+    setExisting(null);
+    setName('');
   };
 
   return (
@@ -81,6 +99,33 @@ export default function Landing({ onStart }) {
           <p className="text-orange-400 font-semibold uppercase tracking-widest text-xs">National AWS Jam Showdown · Prep Workshop</p>
           <p>April 7, 2026 · CSN Charleston · Bldg C, Room 115</p>
         </div>
+
+        {/* Duplicate name confirmation */}
+        {existing && (
+          <div className="bg-sky-900/30 border border-sky-600/50 rounded-xl px-5 py-4 text-left space-y-3">
+            <p className="text-sky-300 font-semibold text-sm">
+              👋 Welcome back, <span className="text-white">{name.trim()}</span>!
+            </p>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              We found an existing session with <span className="text-white font-semibold">{existing.completedCount} challenge{existing.completedCount !== 1 ? 's' : ''}</span> completed.
+              Is that you?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={confirmRestore}
+                className="flex-1 py-2 rounded-lg font-semibold text-white bg-sky-600 hover:bg-sky-500 text-sm transition-all"
+              >
+                Yes, restore my progress
+              </button>
+              <button
+                onClick={denyRestore}
+                className="flex-1 py-2 rounded-lg font-semibold text-slate-300 border border-slate-600 hover:border-slate-400 text-sm transition-all"
+              >
+                Not me — new name
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Start form */}
         <form onSubmit={handleStart} className="space-y-4">
