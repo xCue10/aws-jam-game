@@ -50,10 +50,18 @@ export default function App() {
     const penalty = usedClue ? 25 : 0;
     const scaled = Math.round((rawScore / 100) * maxPoints);
     const final = Math.max(0, scaled - penalty + timeBonus);
-    setScores((prev) => ({ ...prev, [challengeId]: final }));
+    const newScores = { ...scores, [challengeId]: final };
+    const newTotal = Object.values(newScores).reduce((a, b) => a + b, 0);
+    setScores(newScores);
     if (usedClue) {
       setCluesUsed((prev) => ({ ...prev, [challengeId]: true }));
     }
+    // Submit running score so dashboard tracks in-progress players
+    fetch('/api/scores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerName, scores: newScores, totalScore: newTotal }),
+    }).catch(() => {});
   };
 
   return (

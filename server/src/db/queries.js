@@ -33,14 +33,17 @@ export async function saveScore({ playerName, scores, totalScore }) {
 }
 
 export async function getLeaderboard(limit = 20) {
+  // DISTINCT ON deduplicates by player_name, keeping their best score row
   const result = await getPool().query(
-    `SELECT id, player_name, scores, total_score, completed_at
+    `SELECT DISTINCT ON (player_name) id, player_name, scores, total_score, completed_at
      FROM scores
-     ORDER BY total_score DESC, completed_at ASC
+     ORDER BY player_name, total_score DESC, completed_at DESC
      LIMIT $1`,
     [limit]
   );
-  return result.rows;
+  // Re-sort by total_score DESC after deduplication
+  const sorted = result.rows.sort((a, b) => b.total_score - a.total_score || a.completed_at - b.completed_at);
+  return sorted;
 }
 
 export async function getPlayerRank(totalScore) {
