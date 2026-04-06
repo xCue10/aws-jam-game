@@ -95,6 +95,14 @@ export default function Results({ scores, cluesUsed }) {
           )}
         </div>
 
+        {/* Why This Matters */}
+        {challenge.whyMatters && (
+          <div className="bg-orange-500/10 border border-orange-500/30 rounded-2xl p-5">
+            <p className="text-xs text-orange-400 uppercase tracking-widest mb-2">💡 Why This Matters</p>
+            <p className="text-white font-semibold leading-relaxed">{challenge.whyMatters}</p>
+          </div>
+        )}
+
         {/* Explanation */}
         <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 space-y-4">
           <div>

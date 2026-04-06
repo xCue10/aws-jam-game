@@ -46,6 +46,10 @@ export async function getLeaderboard(limit = 20) {
   return sorted;
 }
 
+export async function deleteAllScores() {
+  await getPool().query('TRUNCATE TABLE scores RESTART IDENTITY');
+}
+
 export async function getPlayerScores(playerName) {
   const result = await getPool().query(
     `SELECT scores, total_score FROM scores

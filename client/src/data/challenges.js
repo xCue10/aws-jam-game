@@ -54,6 +54,7 @@ export const challenges = [
     },
     explanation:
       'A least-privilege IAM policy grants only the specific actions the resource needs to function — in this case S3 read access, CloudWatch Logs write, and DynamoDB read. Wildcard actions like s3:DeleteBucket, iam:CreateUser, and ec2:TerminateInstances should always be explicitly denied to prevent privilege escalation.',
+    whyMatters: 'Over-privileged IAM roles are the #1 attack path in AWS breaches — a single compromised Lambda with admin-level permissions can bring down your entire account.',
     awsTool: 'AWS IAM Access Analyzer',
     clue: 'A Lambda function only needs to read data and write logs. Any action that creates, deletes, or modifies infrastructure is suspicious.',
   },
@@ -114,6 +115,7 @@ export const challenges = [
     correctAnswer: ['ep-1', 'ep-2', 'ep-4', 'ep-3', 'ep-5', 'ep-6'],
     explanation:
       'DNS data exfiltration to a C2 domain is the highest severity — active compromise. Root login from a proxy indicates likely account takeover. Crypto mining means a compromised instance. Port probing is reconnaissance (pre-attack). Root credential usage and unusual ports are medium-to-low findings requiring monitoring.',
+    whyMatters: 'Slow triage kills incident response — every minute an active C2 channel is open, attackers are exfiltrating data. GuardDuty fires hundreds of findings; knowing which one to act on first is a real on-call skill.',
     awsTool: 'Amazon GuardDuty',
     clue: 'Think about active vs. passive threat indicators. Active data exfiltration to a known bad domain outranks credential misuse, which outranks reconnaissance.',
   },
@@ -192,6 +194,7 @@ export const challenges = [
     },
     explanation:
       'AWS WAF rules should block SQL injection (OR 1=1), XSS payloads (script tags), rate-limit violations (5k req/s), PHP file uploads, and path traversal (../../). Standard form submissions, product searches, and browser GET requests are legitimate traffic and should not be blocked.',
+    whyMatters: 'A single unblocked SQL injection on a poorly configured API gateway can expose your entire customer database — and blocking too aggressively breaks real user traffic, which is just as bad.',
     awsTool: 'AWS WAF + AWS Shield',
     clue: 'Look for SQL keywords, script tags, path separators (../), unusual Content-Types, and abnormal request rates. Normal web traffic has clean URLs and standard MIME types.',
   },
@@ -232,6 +235,7 @@ export const challenges = [
     },
     explanation:
       'Amazon Macie scans for sensitive data patterns (credentials, PII like SSNs, exposed API keys) already in your S3 buckets. AWS KMS encryption protects structured sensitive data at rest (PCI card numbers, HIPAA PHI, HR records). Publicly available content like press releases and open-source licenses require no special protection.',
+    whyMatters: 'A misconfigured S3 bucket containing unencrypted PII is an automatic GDPR/HIPAA breach notification — companies have paid millions in fines for S3 buckets left public with no encryption.',
     awsTool: 'Amazon Macie + AWS KMS',
     clue: 'Macie detects — it scans for secrets and PII that should not be in S3 at all. KMS encrypts — it protects data that must be stored but needs to be locked down.',
   },
@@ -292,6 +296,7 @@ export const challenges = [
     correctAnswer: ['ir-1', 'ir-2', 'ir-3', 'ir-4', 'ir-5', 'ir-6'],
     explanation:
       'Classic S3 data theft pattern: (1) attacker authenticates via stolen root creds, (2) enumerates permissions, (3) makes bucket public, (4) lists all objects, (5) bulk-downloads everything, then (6) deletes the bucket to cover tracks. CloudTrail timestamps are the key — read the UTC times on each event.',
+    whyMatters: 'This exact attack pattern was used in the 2019 Capital One breach — 100 million customer records stolen from a misconfigured S3 bucket. CloudTrail logs told the whole story after the fact.',
     awsTool: 'AWS CloudTrail + Amazon Detective',
     clue: 'Read the timestamps on each event. The attack follows a logical sequence: authenticate → enumerate → escalate permissions → list data → exfiltrate → destroy evidence.',
   },
@@ -330,6 +335,7 @@ export const challenges = [
     },
     explanation:
       'S3 Object Lock (WORM — Write Once Read Many) prevents ransomware from encrypting or deleting backups. S3 Versioning lets you restore previous file versions after accidental deletion. AWS Backup with cross-region copy ensures a full region failure does not destroy your data. RDS Automated Snapshots let you roll back a corrupted database to a known-good point-in-time.',
+    whyMatters: 'Ransomware that reaches your AWS environment will immediately target your backups — if they are not immutable (WORM), you have nothing to recover from and are forced to pay the ransom.',
     awsTool: 'AWS Backup + S3 Object Lock',
     clue: 'Think about what each disaster actually destroys. Ransomware encrypts live data — you need immutable backups. Region outage takes down everything in one region — you need copies elsewhere.',
   },
@@ -368,6 +374,7 @@ export const challenges = [
     },
     explanation:
       'SCPs act as maximum permission guardrails for every account in your AWS Organization. Block: disabling CloudTrail (destroys audit trail), launching in non-approved regions (violates data residency), creating root access keys (a critical security anti-pattern), and deleting Config rules (undermines compliance enforcement). Permit: launching instances in approved regions, CloudWatch alarms, Lambda invocations, and log group creation are standard operations that should not be restricted.',
+    whyMatters: 'SCPs are the only AWS control that even account-level administrators cannot override — they are your last line of defense when an account is fully compromised.',
     awsTool: 'AWS Organizations + SCPs',
     clue: 'SCPs should block anything that undermines security visibility (CloudTrail, Config), violates region policy, or grants dangerous root-level access. Routine operational actions in approved regions should be permitted.',
   },
@@ -408,6 +415,7 @@ export const challenges = [
     },
     explanation:
       'Any secret exposed in a public repo or attached to the root account must be revoked immediately — assume it is already compromised. Stale database passwords should be enrolled in Secrets Manager auto-rotation. Third-party tokens where you do not control the rotation API require a manual rotation schedule. Secrets already enrolled in automated rotation are compliant.',
+    whyMatters: 'AWS access keys committed to a public GitHub repo are harvested by automated bots within minutes — security researchers have watched accounts accumulate thousands of dollars in EC2 charges before the owner even noticed.',
     awsTool: 'AWS Secrets Manager',
     clue: 'Treat public exposure and root access keys as immediate incidents — revoke first, investigate after. Auto-rotation is for credentials you own and can rotate programmatically. Manual rotation is for credentials a third party controls.',
   },
@@ -468,6 +476,7 @@ export const challenges = [
     correctAnswer: ['ins-1', 'ins-2', 'ins-3', 'ins-4', 'ins-5', 'ins-6'],
     explanation:
       'Log4Shell (CVE-2021-44228) is CVSS 10.0 with active internet-facing exposure — always priority one. The OpenSSL DoS (CVSS 7.5) can take down public-facing services. Open SSH to 0.0.0.0/0 is active network exposure increasing attack surface. The OpenSSL type confusion (CVSS 5.9) is medium severity on internal hosts. EOL Python runtimes accumulate risk over time but have no active exploit. Missing security headers on internal-only services are informational last.',
+    whyMatters: 'Log4Shell was actively exploited within hours of public disclosure — organizations that triaged by CVSS score and internet exposure patched in time; those that worked through a flat list did not.',
     awsTool: 'Amazon Inspector',
     clue: 'Sort by: CVSS score first, then consider internet-facing vs internal exposure. RCE outranks DoS. Active open ports outrank "could be exploited someday" findings.',
   },
@@ -508,6 +517,7 @@ export const challenges = [
     },
     explanation:
       'Run Command executes one-time, on-demand scripts or commands across any set of instances — ideal for immediate or ad-hoc tasks. State Manager enforces continuous configuration compliance — it repeatedly applies associations to keep instances in a desired state (CloudWatch agent installed, hardening baseline applied, inventory collected). Patch Manager is purpose-built for OS patching workflows — scanning for missing patches and deploying them through maintenance windows.',
+    whyMatters: 'SSM eliminates the need for SSH bastion hosts entirely — no open port 22, no stored SSH keys, full auditability — which removes one of the most common attack surfaces in AWS environments.',
     awsTool: 'AWS Systems Manager',
     clue: 'Ask yourself: is this one-time (Run Command), always-on / re-applied (State Manager), or specifically about OS patches and compliance scanning (Patch Manager)?',
   },

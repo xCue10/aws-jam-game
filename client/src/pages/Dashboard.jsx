@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { challenges } from '../data/challenges.js';
 
 const MAX_TOTAL = 1200;
@@ -11,8 +12,19 @@ const TIER = (score) => {
 };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [resetting, setResetting] = useState(false);
+
+  const handleReset = () => {
+    if (!window.confirm('Reset ALL scores? This cannot be undone.')) return;
+    setResetting(true);
+    fetch('/api/scores/reset', { method: 'DELETE' })
+      .then(() => { setRows([]); fetch_(); })
+      .catch(() => {})
+      .finally(() => setResetting(false));
+  };
 
   const fetch_ = useCallback(() => {
     fetch('/api/scores/leaderboard')
@@ -53,9 +65,24 @@ export default function Dashboard() {
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-green-400 text-sm font-mono">LIVE</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/screen')}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-sky-600 text-sky-400 hover:bg-sky-900/30 transition-all"
+            >
+              📺 Projector View
+            </button>
+            <button
+              onClick={handleReset}
+              disabled={resetting || rows.length === 0}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-700 text-red-400 hover:bg-red-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              {resetting ? 'Resetting...' : '🗑️ Reset Scores'}
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-green-400 text-sm font-mono">LIVE</span>
+            </div>
           </div>
         </div>
 

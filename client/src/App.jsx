@@ -7,6 +7,7 @@ import Results from './pages/Results.jsx';
 import FinalScore from './pages/FinalScore.jsx';
 import Leaderboard from './pages/Leaderboard.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Screen from './pages/Screen.jsx';
 
 const LS_KEY = 'aws-jam-session';
 
@@ -102,6 +103,7 @@ export default function App() {
         />
         <Route path="/leaderboard" element={<Leaderboard playerName={playerName} />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/screen" element={<Screen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

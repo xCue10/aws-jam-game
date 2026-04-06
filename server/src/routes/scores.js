@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { saveScore, getLeaderboard, getPlayerRank, getPlayerScores } from '../db/queries.js';
+import { saveScore, getLeaderboard, getPlayerRank, getPlayerScores, deleteAllScores } from '../db/queries.js';
 
 const router = Router();
 
@@ -29,6 +29,11 @@ router.post('/', async (req, res) => {
 router.get('/leaderboard', async (_req, res) => {
   const rows = await getLeaderboard(20);
   res.json(rows);
+});
+
+router.delete('/reset', async (_req, res) => {
+  await deleteAllScores();
+  res.json({ ok: true });
 });
 
 router.get('/player/:name', async (req, res) => {
