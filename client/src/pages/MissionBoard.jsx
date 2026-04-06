@@ -28,14 +28,22 @@ export default function MissionBoard({ playerName, scores, totalScore }) {
             </p>
           </div>
 
-          {allComplete && (
+          <div className="flex gap-3">
             <button
-              onClick={() => navigate('/final')}
-              className="px-6 py-3 bg-orange-500 hover:bg-orange-400 text-white font-semibold rounded-xl transition-all"
+              onClick={() => navigate('/leaderboard')}
+              className="px-4 py-2 rounded-xl border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white text-sm font-semibold transition-all"
             >
-              View Final Score →
+              🏆 Leaderboard
             </button>
-          )}
+            {allComplete && (
+              <button
+                onClick={() => navigate('/final')}
+                className="px-6 py-3 bg-orange-500 hover:bg-orange-400 text-white font-semibold rounded-xl transition-all"
+              >
+                View Final Score →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Score bar */}

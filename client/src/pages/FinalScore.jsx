@@ -107,11 +107,17 @@ export default function FinalScore({ playerName, scores, totalScore }) {
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
+            onClick={() => navigate('/leaderboard')}
+            className="flex-1 py-3 rounded-xl font-semibold text-white bg-sky-600 hover:bg-sky-500 transition-all"
+          >
+            🏆 View Leaderboard
+          </button>
+          <button
             onClick={() => {
               navigator.clipboard?.writeText(shareText);
               alert('Copied to clipboard!');
             }}
-            className="flex-1 py-3 rounded-xl font-semibold text-white bg-sky-600 hover:bg-sky-500 transition-all"
+            className="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-400 hover:text-white transition-all"
           >
             📋 Copy Share Text
           </button>

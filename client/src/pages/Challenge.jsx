@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CHALLENGE_MAP } from '../data/challenges.js';
 import DragDropChallenge from '../components/DragDropChallenge.jsx';
@@ -23,11 +23,19 @@ export default function Challenge({ onComplete, scores }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const challenge = CHALLENGE_MAP[id];
-  const { elapsed, start, stop, timeBonus } = useTimer();
+  const { elapsed, remaining, isExpired, start, stop, timeBonus } = useTimer();
+  const autoSubmitRef = useRef(null);
 
   useEffect(() => {
     if (challenge) start();
   }, [challenge?.id]);
+
+  // Auto-submit when countdown expires
+  useEffect(() => {
+    if (isExpired && autoSubmitRef.current) {
+      autoSubmitRef.current();
+    }
+  }, [isExpired]);
 
   if (!challenge) {
     return (
@@ -48,6 +56,12 @@ export default function Challenge({ onComplete, scores }) {
     onComplete(challenge.id, rawScore, tb, usedClue, challenge.maxPoints ?? 100);
     navigate(`/results/${challenge.id}`);
   };
+
+  // Countdown display
+  const mins = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const secs = String(remaining % 60).padStart(2, '0');
+  const timerUrgent = remaining <= 60;
+  const timerWarning = remaining <= 120 && remaining > 60;
 
   return (
     <div className="min-h-screen bg-[#161F2E] px-4 py-8">
@@ -77,16 +91,27 @@ export default function Challenge({ onComplete, scores }) {
             <p className="text-xs text-slate-500 mt-1">Up to {challenge.maxPoints} pts</p>
           </div>
 
-          {/* Timer */}
-          <div className="flex items-center gap-3">
-            <div className="font-mono text-2xl text-slate-300 tabular-nums">
-              {String(Math.floor(elapsed / 60)).padStart(2, '0')}:
-              {String(elapsed % 60).padStart(2, '0')}
+          {/* Countdown timer */}
+          <div className="flex flex-col items-end gap-1">
+            <div className={`font-mono text-2xl tabular-nums font-bold ${
+              timerUrgent ? 'text-red-400 animate-pulse' :
+              timerWarning ? 'text-yellow-400' :
+              'text-slate-300'
+            }`}>
+              {mins}:{secs}
             </div>
             {elapsed < 60 && (
               <span className="text-xs text-green-400 border border-green-500/40 bg-green-500/10 px-2 py-0.5 rounded-full">
-                +10 bonus
+                +10 speed bonus
               </span>
+            )}
+            {elapsed >= 60 && elapsed < 90 && (
+              <span className="text-xs text-sky-400 border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 rounded-full">
+                +5 speed bonus
+              </span>
+            )}
+            {timerUrgent && (
+              <span className="text-xs text-red-400">Time running out!</span>
             )}
           </div>
         </div>
@@ -105,7 +130,11 @@ export default function Challenge({ onComplete, scores }) {
         </div>
 
         {/* Drag-drop engine */}
-        <DragDropChallenge challenge={challenge} onSubmit={handleSubmit} />
+        <DragDropChallenge
+          challenge={challenge}
+          onSubmit={handleSubmit}
+          autoSubmitRef={autoSubmitRef}
+        />
       </div>
     </div>
   );

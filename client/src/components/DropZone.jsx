@@ -16,6 +16,7 @@ export default function DropZone({ zone, placedItems, allItems, onDrop, onReturn
 
   return (
     <div
+      data-zone-id={zone.id}
       onDragOver={(e) => { e.preventDefault(); setIsOver(true); }}
       onDragLeave={() => setIsOver(false)}
       onDrop={(e) => { e.preventDefault(); setIsOver(false); onDrop(zone.id); }}
@@ -48,6 +49,7 @@ export default function DropZone({ zone, placedItems, allItems, onDrop, onReturn
               small
               onDragStart={onDragStart}
               onDragEnd={() => onReturnToSource(id)}
+              onTouchDrop={onDrop}
             />
           );
         })}

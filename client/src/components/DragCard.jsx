@@ -10,7 +10,29 @@ const colorMap = {
   default: 'border-slate-600 bg-slate-800/60 text-white',
 };
 
-export default function DragCard({ item, onDragStart, onDragEnd, color = 'default', small = false, className = '' }) {
+export default function DragCard({ item, onDragStart, onDragEnd, onTouchDrop, color = 'default', small = false, className = '' }) {
+  const handleTouchStart = (e) => {
+    onDragStart?.(item.id);
+  };
+
+  const handleTouchEnd = (e) => {
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    // Find the element under the finger at release
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    // Walk up the DOM to find a drop zone (marked with data-zone-id)
+    let target = el;
+    while (target && target !== document.body) {
+      if (target.dataset?.zoneId) {
+        onTouchDrop?.(target.dataset.zoneId);
+        return;
+      }
+      target = target.parentElement;
+    }
+    // No zone found — trigger onDragEnd to return to source
+    onDragEnd?.();
+  };
+
   return (
     <div
       draggable
@@ -19,9 +41,11 @@ export default function DragCard({ item, onDragStart, onDragEnd, color = 'defaul
         onDragStart?.(item.id);
       }}
       onDragEnd={() => onDragEnd?.()}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={[
         'border rounded-lg cursor-grab active:cursor-grabbing select-none transition-all',
-        'hover:scale-[1.02] hover:shadow-lg',
+        'hover:scale-[1.02] hover:shadow-lg touch-none',
         small ? 'px-3 py-2 text-sm' : 'px-4 py-3',
         colorMap[color] ?? colorMap.default,
         className,

@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
   const saved = await saveScore({
     playerName: playerName.trim().slice(0, 100),
     scores,
-    totalScore: Math.max(0, Math.min(totalScore, 660)),
+    totalScore: Math.max(0, Math.min(totalScore, 1200)),
   });
 
   const rank = await getPlayerRank(saved.total_score);

@@ -5,6 +5,7 @@ import MissionBoard from './pages/MissionBoard.jsx';
 import Challenge from './pages/Challenge.jsx';
 import Results from './pages/Results.jsx';
 import FinalScore from './pages/FinalScore.jsx';
+import Leaderboard from './pages/Leaderboard.jsx';
 
 export default function App() {
   const [playerName, setPlayerName] = useState('');
@@ -66,6 +67,7 @@ export default function App() {
               : <Navigate to="/" replace />
           }
         />
+        <Route path="/leaderboard" element={<Leaderboard playerName={playerName} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

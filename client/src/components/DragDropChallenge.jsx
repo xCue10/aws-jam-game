@@ -56,7 +56,7 @@ function OrderChallenge({ challenge, dragDrop }) {
             const item = challenge.items.find((i) => i.id === id);
             if (!item) return null;
             return (
-              <DragCard key={id} item={item} onDragStart={onDragStart} />
+              <DragCard key={id} item={item} onDragStart={onDragStart} onTouchDrop={(zoneId) => onDrop(zoneId)} />
             );
           })}
           {unplaced.length === 0 && (
@@ -71,6 +71,7 @@ function OrderChallenge({ challenge, dragDrop }) {
           Timeline — drag into order
         </p>
         <div
+          data-zone-id="list"
           onDragOver={(e) => { e.preventDefault(); setIsOverList(true); }}
           onDragLeave={() => setIsOverList(false)}
           onDrop={(e) => { e.preventDefault(); setIsOverList(false); onDrop('list'); }}
@@ -123,7 +124,7 @@ function BucketChallenge({ challenge, dragDrop }) {
           {unplaced.map((id) => {
             const item = challenge.items.find((i) => i.id === id);
             if (!item) return null;
-            return <DragCard key={id} item={item} onDragStart={onDragStart} />;
+            return <DragCard key={id} item={item} onDragStart={onDragStart} onTouchDrop={onDrop} />;
           })}
           {unplaced.length === 0 && (
             <p className="text-slate-600 text-sm">All items placed ✓</p>
@@ -163,7 +164,7 @@ function MatchChallenge({ challenge, dragDrop }) {
           {unplaced.map((id) => {
             const item = challenge.items.find((i) => i.id === id);
             if (!item) return null;
-            return <DragCard key={id} item={item} onDragStart={onDragStart} />;
+            return <DragCard key={id} item={item} onDragStart={onDragStart} onTouchDrop={onDrop} />;
           })}
           {unplaced.length === 0 && (
             <p className="text-slate-600 text-sm">All strategies matched ✓</p>
@@ -191,7 +192,7 @@ function MatchChallenge({ challenge, dragDrop }) {
 
 // ─── Main export ───────────────────────────────────────────────────────────
 
-export default function DragDropChallenge({ challenge, onSubmit }) {
+export default function DragDropChallenge({ challenge, onSubmit, autoSubmitRef }) {
   const dragDrop = useDragDrop(challenge.type, challenge.items);
   const [showClue, setShowClue] = useState(false);
 
@@ -199,6 +200,11 @@ export default function DragDropChallenge({ challenge, onSubmit }) {
     const rawScore = computeRawScore(challenge, dragDrop.placed);
     onSubmit(rawScore, dragDrop.placed, showClue);
   };
+
+  // Expose auto-submit so Challenge page can call it on timer expiry
+  if (autoSubmitRef) {
+    autoSubmitRef.current = handleSubmit;
+  }
 
   return (
     <div className="space-y-8">

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const DOMAINS = [
+  '🔐 IAM', '🏛️ SCPs', '🛡️ GuardDuty', '🔍 Inspector',
+  '⚙️ Systems Manager', '🌐 WAF', '🗄️ Macie/KMS',
+  '🔑 Secrets Manager', '📋 CloudTrail', '💾 Backup',
+];
+
 export default function Landing({ onStart }) {
   const [name, setName] = useState('');
   const navigate = useNavigate();
@@ -43,18 +49,24 @@ export default function Landing({ onStart }) {
             <span className="text-orange-400">Jam Simulator</span>
           </h1>
           <p className="mt-4 text-slate-400 text-lg">
-            6 real-world cloud security challenges.<br />
+            10 real-world cloud security challenges.<br />
             Drag, drop, and defend.
           </p>
         </div>
 
         {/* Challenge domains */}
-        <div className="grid grid-cols-3 gap-2 text-xs text-slate-400">
-          {['🔐 IAM', '🛡️ GuardDuty', '🌐 WAF', '🗄️ Macie/KMS', '📋 CloudTrail', '💾 Backup'].map((d) => (
-            <span key={d} className="bg-slate-800/60 border border-slate-700 rounded-lg px-2 py-1.5 font-mono">
+        <div className="grid grid-cols-2 gap-2 text-xs text-slate-400">
+          {DOMAINS.map((d) => (
+            <span key={d} className="bg-slate-800/60 border border-slate-700 rounded-lg px-2 py-1.5 font-mono text-center">
               {d}
             </span>
           ))}
+        </div>
+
+        {/* Event info */}
+        <div className="bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 text-xs text-slate-400 text-center space-y-0.5">
+          <p className="text-orange-400 font-semibold uppercase tracking-widest text-xs">National AWS Jam Showdown · Prep Workshop</p>
+          <p>April 26, 2026 · CSN Charleston · Bldg C, Room 115</p>
         </div>
 
         {/* Start form */}
@@ -77,7 +89,13 @@ export default function Landing({ onStart }) {
           </button>
         </form>
 
-        <p className="text-slate-600 text-xs">No account required · Solo play · ~10 minutes</p>
+        <div className="flex items-center justify-center gap-4 text-slate-600 text-xs">
+          <span>No account required</span>
+          <span>·</span>
+          <button onClick={() => navigate('/leaderboard')} className="hover:text-slate-400 transition-colors underline underline-offset-2">
+            View leaderboard
+          </button>
+        </div>
       </div>
     </div>
   );
