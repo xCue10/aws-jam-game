@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 
+
 const DOMAINS = [
   '🔐 IAM', '🏛️ SCPs', '🛡️ GuardDuty', '🔍 Inspector',
   '⚙️ Systems Manager', '🌐 WAF', '🗄️ Macie/KMS',
@@ -10,13 +11,24 @@ const DOMAINS = [
 
 export default function Landing({ onStart }) {
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleStart = (e) => {
+  const handleStart = async (e) => {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
-    onStart(trimmed);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/scores/player/${encodeURIComponent(trimmed)}`);
+      const data = await res.json();
+      const restoredScores = data.scores && typeof data.scores === 'object' ? data.scores : {};
+      onStart(trimmed, restoredScores);
+    } catch {
+      onStart(trimmed, {});
+    } finally {
+      setLoading(false);
+    }
     navigate('/board');
   };
 
@@ -83,10 +95,10 @@ export default function Landing({ onStart }) {
           />
           <button
             type="submit"
-            disabled={!name.trim()}
+            disabled={!name.trim() || loading}
             className="w-full py-3 rounded-xl font-semibold text-white bg-orange-500 hover:bg-orange-400 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed transition-all text-lg"
           >
-            Start Mission →
+            {loading ? 'Loading...' : 'Start Mission →'}
           </button>
         </form>
 

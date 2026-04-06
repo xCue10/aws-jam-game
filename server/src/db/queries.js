@@ -46,6 +46,17 @@ export async function getLeaderboard(limit = 20) {
   return sorted;
 }
 
+export async function getPlayerScores(playerName) {
+  const result = await getPool().query(
+    `SELECT scores, total_score FROM scores
+     WHERE player_name = $1
+     ORDER BY total_score DESC, completed_at DESC
+     LIMIT 1`,
+    [playerName]
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function getPlayerRank(totalScore) {
   const result = await getPool().query(
     `SELECT COUNT(*) + 1 AS rank FROM scores WHERE total_score > $1`,

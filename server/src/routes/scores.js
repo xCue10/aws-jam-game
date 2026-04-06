@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { saveScore, getLeaderboard, getPlayerRank } from '../db/queries.js';
+import { saveScore, getLeaderboard, getPlayerRank, getPlayerScores } from '../db/queries.js';
 
 const router = Router();
 
@@ -29,6 +29,13 @@ router.post('/', async (req, res) => {
 router.get('/leaderboard', async (_req, res) => {
   const rows = await getLeaderboard(20);
   res.json(rows);
+});
+
+router.get('/player/:name', async (req, res) => {
+  const name = req.params.name.trim();
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const row = await getPlayerScores(name);
+  res.json(row ?? { scores: {}, total_score: 0 });
 });
 
 export default router;

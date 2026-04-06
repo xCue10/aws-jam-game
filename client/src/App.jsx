@@ -38,11 +38,11 @@ export default function App() {
     if (playerName) saveSession(playerName, scores, cluesUsed);
   }, [playerName, scores, cluesUsed]);
 
-  const handleStart = (name) => {
+  const handleStart = (name, restoredScores = {}) => {
     setPlayerName(name);
-    setScores({});
+    setScores(restoredScores);
     setCluesUsed({});
-    saveSession(name, {}, {});
+    saveSession(name, restoredScores, {});
   };
 
   /** Called by Challenge page after submission */
