@@ -51,9 +51,8 @@ export default function Challenge({ onComplete, scores }) {
   const alreadyPlayed = scores[challenge.id] !== undefined;
 
   const handleSubmit = (rawScore, placed, usedClue) => {
-    const finalElapsed = stop();
-    const tb = finalElapsed < 60 ? 10 : finalElapsed < 90 ? 5 : 0;
-    onComplete(challenge.id, rawScore, tb, usedClue, challenge.maxPoints ?? 100);
+    stop();
+    onComplete(challenge.id, rawScore, timeBonus, usedClue, challenge.maxPoints ?? 100);
     navigate(`/results/${challenge.id}`);
   };
 

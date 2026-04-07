@@ -6,8 +6,8 @@ const router = Router();
 // This endpoint exists for future server-side validation / admin use
 router.get('/', (_req, res) => {
   res.json({
-    count: 6,
-    domains: ['iam', 'endpoint', 'webapp', 'data', 'incident', 'backup'],
+    count: 10,
+    domains: ['iam', 'endpoint', 'webapp', 'data', 'incident', 'backup', 'scp', 'secrets', 'inspector', 'ssm'],
   });
 });
 

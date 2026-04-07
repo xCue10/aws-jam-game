@@ -9,7 +9,16 @@
       "Bash(git init:*)",
       "Bash(git remote:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(curl:*)",
+      "Bash(git push:*)",
+      "Bash(railway --version)",
+      "Bash(git fetch:*)",
+      "Bash(grep -n \"challenge.maxPoints\\\\|challenge.icon\\\\|challenge.domain\" /c/Users/Jordon/aws-jam-game/client/src/pages/*.jsx)",
+      "Bash(grep -n \"navigate\\\\\\(\" /c/Users/Jordon/aws-jam-game/client/src/pages/*.jsx)",
+      "Bash(grep -n \"navigate\" /c/Users/Jordon/aws-jam-game/client/src/pages/*.jsx)",
+      "Bash(grep \"^  {$\" /c/Users/Jordon/aws-jam-game/client/src/data/challenges.js)",
+      "Bash(grep -n \"fetch\\\\|axios\" /c/Users/Jordon/aws-jam-game/client/src/pages/*.jsx)"
     ]
   }
 }
